@@ -13,7 +13,7 @@ router.delete('/organizations/:id', async (req, res) => {
     const _id = req.params.id;
     try {
         await Organization.findByIdAndRemove({ _id });
-        res.status(204);
+        res.status(204).send(`${_id} Successuly deleted  `);
     } catch (err) {
         res.status(400).send(err);
     }

@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:4000/api/organizations/61716e4785479620c83fe8f6
+DELETE http://localhost:4000/api/organizations/6171a6278252fe6cb81ea8cb
 
 ###
 GET http://localhost:4000/api/organizations
