@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "jest"
+    "start": "env-cmd ./config/dev.env nodemon index.js",
+    "test": "env-cmd ./config/test.env jest"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "mongoose": "6.0.8"
   },
   "devDependencies": {
+    "env-cmd": "8.0.2",
     "jest": "27.3.1",
     "nodemon": "2.0.13",
     "supertest": "6.1.6"

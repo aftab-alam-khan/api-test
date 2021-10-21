@@ -14,7 +14,7 @@ const authenticateUserRoute = require('./routes/users/authenticateUser');
 dotenv.config();
 
 // connect to DB 
-mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true })
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true })
     .then(() => console.log('connected to db successfull...'))
     .catch(err => console.log(err));
 
