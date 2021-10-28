@@ -1,36 +1,109 @@
-const express = require('express');
-const app = express();
+const hapi = require('@hapi/hapi');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const routes = require('./test1')
 
-//Import Routes
-const createOrganizationRoute = require('./routes/organization/createOrganization');
-const deleteOrganizationRoute = require('./routes/organization/deleteOrganization');
-const getOrganizationRoute = require('./routes/organization/getOrganization');
-const updateOrganizationRoute = require('./routes/organization/updateOrganization');
-const createUserRoute = require('./routes/users/createUser');
-const authenticateUserRoute = require('./routes/users/authenticateUser');
+// Connect Database
+mongoose.connect('mongodb://localhost/hapidb')
+    .then(() => console.log('MongoDB Connected'))
+    .catch((err) => console.log(err));
 
-dotenv.config();
+// Create Task Model
+const Task = mongoose.model('Task', { text: String });
 
-// connect to DB 
-mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true })
-    .then(() => console.log('connected to db successfull...'))
-    .catch(err => console.log(err));
 
-//Middleware
-app.use(express.json()) // for parsing application/json
+const init = async () => {
 
-app.get('/', (req, res) => {
-    res.status(200).send(`Organization API's`);
+    const server = hapi.server({
+        port: 8000,
+        host: 'localhost'
+    });
+
+    // await server.register([{
+    //     // Inert Templates
+    //     plugin: inert
+    // },
+    // {
+    //     // Vision Templates
+    //     plugin: vision
+    // }]);
+    
+
+    // const routes = [
+    //     {// GET Tasks Route
+    //         method: 'GET',
+    //         path: '/tasks',
+    //         handler: async (request, h) => {
+    //             Task.create()
+    //             const taskRaw = await Task.find({});
+    //             const taskData = taskRaw.map(val => {
+    //                 return { id: val._id.toString(), text: val.text }
+    //             });
+    //             return h.view('task', {
+    //                 tasks: taskData
+    //             });
+    //         }
+    //     },
+    //     {// Get Tasks Route by id
+    //         method: 'GET',
+    //         path: '/tasks/{id}',
+    //         handler: async (request, h) => {
+    //             const _id = request.params.id;
+    //             const taskRaw = await Task.findById({ _id });
+    //             const taskData = [taskRaw].map(val => {
+    //                 return { id: val._id, text: val.text }
+    //             });
+    //             h.response(taskData)
+    //             return h.view('task', {
+    //                 tasks: taskData
+    //             });
+    //         }
+    //     },
+    //     {// POST Tasks Route
+    //         method: 'POST',
+    //         path: '/tasks',
+    //         handler: async (request, h) => {
+    //             const rawText = request.payload.text;
+    //             const addd = new Task({ text: rawText })
+    //             const {_id, text} = await addd.save();
+    //             return h.response({ _id, text }).redirect().location('/tasks');
+                
+    //         }
+    //     },
+    //     {// Update Tasks Route by id
+    //         method: 'PATCH',
+    //         path: '/tasks/{id}',
+    //         handler: async (request, h) => {
+    //             const _id = request.params.id;
+    //             const textRaw = request.payload.text
+    //             const taskData = await Task.updateOne({ _id },
+    //                 { $set: { text: textRaw }});
+    //             console.log(taskData, 'Updated');
+    //             return h.response('Updated');
+    //         }
+    //     },
+    //     {// Delete Tasks Route by id
+    //         method: 'DELETE',
+    //         path: '/tasks/{id}',
+    //         handler: async (request, h) => {
+    //             const _id = request.params.id;
+    //             const taskData = await Task.deleteOne({_id})
+    //             return h.response(`Deleted ${taskData}`)
+    //         }
+    //     }
+    // ];
+
+    
+    server.route(routes);
+
+    await server.start();
+    console.log('Server running on %s', server.info.uri);
+};
+
+process.on('unhandledRejection', (err) => {
+
+    console.log(err);
+    process.exit(1);
 });
 
-//Route Middlewares
-app.use('/api', createOrganizationRoute);
-app.use('/api', deleteOrganizationRoute);
-app.use('/api', getOrganizationRoute);
-app.use('/api', updateOrganizationRoute);
-app.use('/api', createUserRoute);
-app.use('/api', authenticateUserRoute);
-
-module.exports = app;
+init();
