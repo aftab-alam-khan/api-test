@@ -1,7 +1,7 @@
 # Getting Started with Create React App
 
 1. clone the repository `git clone git@github.com:aftab-alam-khan/api-test.git`
-1. Go to folder `cd api-test`
+1. Go to folder `cd api-test` 
 1. `npm install`
 
 ## Available Scripts
