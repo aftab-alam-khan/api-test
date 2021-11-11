@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../../model/User');
 const userSchema = require('./Schemas/user');
+const verifyToken = require('../utils/validateToken');
 const {
     login,
     users,
@@ -25,7 +26,7 @@ router.post('/user/login', async (req, res) => {
     }
 });
 
-router.post('/user', async (req, res) => {
+router.post('/user', verifyToken, async (req, res) => {
     
     const { error } = userSchema(req.body);
     if (error) return res.status(400).send(error.details[0].message);
@@ -49,7 +50,7 @@ router.post('/user', async (req, res) => {
     }
 });
 
-router.get('/users', async (req, res) => {
+router.get('/users', verifyToken, async (req, res) => {
     try {
         const organizationQuery = await getUsers();
         res.status(200).send(organizationQuery);
