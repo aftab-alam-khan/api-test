@@ -1,101 +1,115 @@
 'use strict'
 
 const router = require('express').Router();
-const Organization = require('../../model/Organization');
+// const Organization = require('../../model/Organization');
 const createOrganizationSchema = require('./Schemas/createOrganization');
 const deleteOrganizationSchema = require('./Schemas/deleteOrganization');
 const queryOrganizationSchema = require('./Schemas/getOrganization');
 const updateOrganizationSchema = require('./Schemas/updateOrganization');
 const verifyToken = require('../utils/validateToken');
 
+const {
+    createOrganization,
+    deleteOrganizationByID,
+    getOrganization,
+    getOrganizationByID,
+    getOrganizationByName,
+    getOrganizationByCode
+} = require('./organizationErrorHandler');
+
 // Create an organization information
-router.post('/organizations', async (req, res) => {
+router.post('/organizations', verifyToken, async (req, res) => {
     
     const { error } = createOrganizationSchema(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const organizationCreated = new Organization({
+    const organization = {
         name: req.body.name,
         description: req.body.description,
         url: req.body.url,
         code: req.body.code,
         type: req.body.type,
-    });
+    };
     try {
-        await organizationCreated.save();
+        const organizationCreated = await createOrganization(organization)
         res.status(201).send(organizationCreated);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
     }
 });
 
 // Delete an organization information
-router.delete('/organizations/:id', async (req, res) => {
+router.delete('/organizations/:id', verifyToken, async (req, res) => {
     
     const { error } = deleteOrganizationSchema(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const _id = req.params.id;
+    const id = req.params.id;
     try {
-        await Organization.findByIdAndRemove({ _id });
-        res.status(204).send(`${_id} Successuly deleted  `);
+        const organizationId = await deleteOrganizationByID(id);
+        res.status(200).json({ message: organizationId });
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
     }
 });
 
-// Get organization information
-router.get('/organizations', async (req, res) => {
-    
-    try {
-        const organizationQuery = await Organization.find({}).select({ code: 0, url: 0});
-        res.status(200).send(organizationQuery);
-    } catch (err) {
-        res.status(400).send(err);
-    }
-});
+router.get('/organizations', verifyToken, async (req, res) => {
 
-router.get('/organizations/name/:name', verifyToken, async (req, res) => {
-    
-    const { error } = queryOrganizationSchema(req.params);
+    const { error } = queryOrganizationSchema(req.query);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const name = req.params.name;
+    const { name, code } = req.query;
+    const filter = { code: 0, url: 0 }
+    if (name) {
     try {
-        const organizationQuery = await Organization.find({ name }).select({ code: 0, url: 0});
+        const organizationQuery = await getOrganizationByName(name, filter);
         res.status(200).send(organizationQuery);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
     }
-});
-
-router.get('/organizations/code/:code', verifyToken, async (req, res) => {
-    
-    const { error } = queryOrganizationSchema(req.params);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    const code = req.params.code;
+        
+    } else if (code) {
     try {
-        const organizationQuery = await Organization.find({ code });
+        const organizationQuery = await getOrganizationByCode(code);
         res.status(200).send(organizationQuery);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
+    }
+        
+    } else {
+        try {
+            const organizationQuery = await getOrganization(filter);
+            res.status(200).send(organizationQuery);
+        } catch (err) {
+            res.status(400).json({
+                "Title": err.title,
+                "message": err.message});
+        }
     }
 });
 
 //Update an Organization information
-router.patch('/organizations/:id', async (req, res) => {
+router.patch('/organizations/:id', verifyToken, async (req, res) => {
     
     const { error } = updateOrganizationSchema(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const _id = req.params.id;
+    const id = req.params.id;
     try {
-        await Organization.updateOne({ _id },
-            { $set: req.body });
-        res.status(204);
+        const organizationQuery = await getOrganizationByID(id, req.body)
+        res.status(200).send(organizationQuery);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
     }
 });
 

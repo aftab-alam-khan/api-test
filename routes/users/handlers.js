@@ -5,22 +5,27 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../../model/User');
 const userSchema = require('./Schemas/user');
+const {
+    login,
+    users,
+    getUsers
+} = require('./userErrorHandler');
 
-router.post('/users/login', async (req, res) => {
+router.post('/user/login', async (req, res) => {
     const { error } = userSchema(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-    
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).send("Email doesn't exists.");
 
-    const validPass = await bcrypt.compare(req.body.password, user.password);
-    if (!validPass) return res.status(400).send('Password is Invalid.');
-
-    const accessToken = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.ACCESS_TOKEN_EXPIREIN});
-    res.status(201).send({ id_token: accessToken });
+    try {
+        const accessToken = await login(req.body.email, req.body.password,)
+        res.status(201).json(accessToken)
+    } catch (err) {
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
+    }
 });
 
-router.post('/users', async (req, res) => {
+router.post('/user', async (req, res) => {
     
     const { error } = userSchema(req.body);
     if (error) return res.status(400).send(error.details[0].message);
@@ -29,15 +34,29 @@ router.post('/users', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     
-    const user = new User({
+    const user = {
         email: req.body.email,
         password: hashedPassword
-    });
+    };
+
     try {
-        await user.save();
-        res.status(201).send(user);
+        const newuser = await users(user);
+        res.status(201).send(newuser);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
+    }
+});
+
+router.get('/users', async (req, res) => {
+    try {
+        const organizationQuery = await getUsers();
+        res.status(200).send(organizationQuery);
+    } catch (err) {
+        res.status(400).json({
+            "Title": err.title,
+            "message": err.message});
     }
 });
 

@@ -11,7 +11,6 @@ describe('User API', () => {
             email: "test@gmail.com",
             password: "1234567"
         })
-        console.log(await res);
         expect(res.status).toEqual(201);
         done()
     })
