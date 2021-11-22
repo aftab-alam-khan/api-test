@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true })
 app.use(express.json()) // for parsing application/json
 
 app.get('/health_check', (req, res) => {
-    res.status(200).send(`Organization API's Health Check`);
+    res.status(200).send(`Organization API's Health Check Looking good!.`);
 });
 
 //Route Middlewares
