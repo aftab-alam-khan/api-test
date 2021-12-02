@@ -1,19 +1,17 @@
 'use strict'
 
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const User = require('../../model/User');
-const userSchema = require('./Schemas/user');
+const { hashUserPassowrd } = require('../utils/user');
+const { userValidator } = require('./schemas');
 const verifyToken = require('../utils/validateToken');
 const {
     login,
-    users,
+    createUsers,
     getUsers
-} = require('./userErrorHandler');
+} = require('./services');
 
 router.post('/user/login', async (req, res) => {
-    const { error } = userSchema(req.body);
+    const { error } = userValidator(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     try {
@@ -28,20 +26,18 @@ router.post('/user/login', async (req, res) => {
 
 router.post('/user', verifyToken, async (req, res) => {
     
-    const { error } = userSchema(req.body);
+    const { error } = userValidator(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-
-    //Hash passwords
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
     
-    const user = {
+    const userInfo = {
         email: req.body.email,
-        password: hashedPassword
+        password: req.body.password,
+        roundSalts: 10
     };
+    const getHashUser = await hashUserPassowrd(userInfo.email, userInfo.password, userInfo.roundSalts);
 
     try {
-        const newuser = await users(user);
+        const newuser = await createUsers(getHashUser);
         res.status(201).send(newuser);
     } catch (err) {
         res.status(400).json({

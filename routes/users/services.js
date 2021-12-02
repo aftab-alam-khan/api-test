@@ -21,7 +21,7 @@ const login = async (email, password) => {
   }
 };
 
-const users = async (user) => {
+const createUsers = async (user) => {
     
   try {
     const newUser = new User(user);
@@ -44,6 +44,6 @@ const getUsers = async (filter) => {
 
 module.exports = {
   login,
-  users,
+  createUsers,
   getUsers
 }

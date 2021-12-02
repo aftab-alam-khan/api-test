@@ -1,26 +1,23 @@
 'use strict'
 
 const router = require('express').Router();
-// const Organization = require('../../model/Organization');
-const createOrganizationSchema = require('./Schemas/createOrganization');
-const deleteOrganizationSchema = require('./Schemas/deleteOrganization');
-const queryOrganizationSchema = require('./Schemas/getOrganization');
-const updateOrganizationSchema = require('./Schemas/updateOrganization');
+const { organizationValidator,
+    idValidator,
+    queryValidator
+} = require('./schemas');
 const verifyToken = require('../utils/validateToken');
+const { getOrganizationInstanceByNameOrCode } = require('../utils/organization');
 
 const {
     createOrganization,
     deleteOrganizationByID,
-    getOrganization,
-    getOrganizationByID,
-    getOrganizationByName,
-    getOrganizationByCode
-} = require('./organizationErrorHandler');
+    getOrganizationByID
+} = require('./services');
 
 // Create an organization information
 router.post('/organizations', verifyToken, async (req, res) => {
     
-    const { error } = createOrganizationSchema(req.body);
+    const { error } = organizationValidator(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     const organization = {
@@ -43,7 +40,7 @@ router.post('/organizations', verifyToken, async (req, res) => {
 // Delete an organization information
 router.delete('/organizations/:id', verifyToken, async (req, res) => {
     
-    const { error } = deleteOrganizationSchema(req.params);
+    const { error } = idValidator(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
     const id = req.params.id;
@@ -59,47 +56,27 @@ router.delete('/organizations/:id', verifyToken, async (req, res) => {
 
 router.get('/organizations', verifyToken, async (req, res) => {
 
-    const { error } = queryOrganizationSchema(req.query);
+    const { error } = queryValidator(req.query);
     if (error) return res.status(400).send(error.details[0].message);
 
     const { name, code } = req.query;
     const filter = { code: 0, url: 0 }
-    if (name) {
+    const organizationInstance = getOrganizationInstanceByNameOrCode(name, code, filter)
+
     try {
-        const organizationQuery = await getOrganizationByName(name, filter);
-        res.status(200).send(organizationQuery);
+        const data = await organizationInstance.fun(...organizationInstance.args)
+        res.status(200).send(data);
     } catch (err) {
         res.status(400).json({
             "Title": err.title,
             "message": err.message});
-    }
-        
-    } else if (code) {
-    try {
-        const organizationQuery = await getOrganizationByCode(code);
-        res.status(200).send(organizationQuery);
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
-    }
-        
-    } else {
-        try {
-            const organizationQuery = await getOrganization(filter);
-            res.status(200).send(organizationQuery);
-        } catch (err) {
-            res.status(400).json({
-                "Title": err.title,
-                "message": err.message});
-        }
     }
 });
 
 //Update an Organization information
 router.patch('/organizations/:id', verifyToken, async (req, res) => {
     
-    const { error } = updateOrganizationSchema(req.body);
+    const { error } = organizationValidator(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     const id = req.params.id;

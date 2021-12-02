@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 
-const user = (data) => {
+const userValidator = (data) => {
     const schema = Joi.object({
         email: Joi.string().required().email(),
         password: Joi.string().required()
@@ -10,4 +10,4 @@ const user = (data) => {
     return schema.validate(data);
 }
 
-module.exports = user;
+module.exports = { userValidator };
