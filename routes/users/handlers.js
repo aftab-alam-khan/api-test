@@ -1,6 +1,6 @@
 'use strict'
 
-const router = require('express').Router();
+
 const { hashUserPassowrd } = require('../utils/user');
 const { userValidator } = require('./schemas');
 const verifyToken = require('../utils/validateToken');
@@ -10,51 +10,69 @@ const {
     getUsers
 } = require('./services');
 
-router.post('/user/login', async (req, res) => {
-    const { error } = userValidator(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+const userRoutes = [{
+    method: 'POST',
+    path: '/user/login',
+    options: {
+        validate: {
+            payload: userValidator
+        }
+    },
+    handler: async (request, reply) => {
 
-    try {
-        const accessToken = await login(req.body.email, req.body.password,)
-        res.status(201).json(accessToken)
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
+        try {
+            const accessToken = await login(request.payload.email, request.payload.password);
+            return reply.response(accessToken).code(201)
+        } catch (err) {
+            return reply.response({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
     }
-});
+},
+{
+    method: 'POST',
+    path: '/user',
+    options: {
+        validate: {
+            payload: userValidator
+        }
+    },
+    handler: async (request, reply) => {
 
-router.post('/user', verifyToken, async (req, res) => {
-    
-    const { error } = userValidator(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-    
-    const userInfo = {
-        email: req.body.email,
-        password: req.body.password,
-        roundSalts: 10
-    };
-    const getHashUser = await hashUserPassowrd(userInfo.email, userInfo.password, userInfo.roundSalts);
+        const userInfo = {
+            ...request.payload,
+            roundSalts: 10
+        };
+        const getHashUser = await hashUserPassowrd(userInfo.email, userInfo.password, userInfo.roundSalts);
 
-    try {
-        const newuser = await createUsers(getHashUser);
-        res.status(201).send(newuser);
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
+        try {
+            const newuser = await createUsers(getHashUser);
+            return reply.response(newuser).code(201);
+        } catch (err) {
+            return reply.response({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
     }
-});
+},
+{
+    method: 'GET',
+    path: '/users',
+    handler: async (request, reply) => {
 
-router.get('/users', verifyToken, async (req, res) => {
-    try {
-        const organizationQuery = await getUsers();
-        res.status(200).send(organizationQuery);
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
+        try {
+            const organizationQuery = await getUsers();
+            return reply.response(organizationQuery).code(200);
+        } catch (err) {
+            return reply.response({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
     }
-});
+}]
 
-module.exports = router;
+module.exports = userRoutes;

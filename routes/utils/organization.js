@@ -12,7 +12,7 @@ const getOrganizationInstanceByNameOrCode = (name, code, filter) => {
   } else if (code) {
       funArgs = { args: [code], fun: getOrganizationByCode }
   } else {
-      funArgs = { args: [filter], fun: getOrganization }
+      funArgs = { args: [], fun: getOrganization }
   }
   return funArgs;
 }

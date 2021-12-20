@@ -2,6 +2,7 @@ const Organization = require('../../model/Organization');
 const ErrorHandle = require('../../error/errorHandler')
 
 const createOrganization = async (organization) => {
+
   try {
     const newOrganization = new Organization(organization);
     await newOrganization.save();
@@ -23,7 +24,7 @@ const deleteOrganizationByID = async (_id) => {
 
 const getOrganization = async (filter) => {
   try {
-    const organizationQuery = await Organization.find({}).select(filter);
+    const organizationQuery = await Organization.find({});
     return organizationQuery;
   } catch (error) {
     throw new ErrorHandle('Get an Organization Error', 'Failed to get an Organization')
