@@ -21,10 +21,10 @@ const userRoutes = [{
     handler: async (request, reply) => {
 
         try {
-            const accessToken = await login(request.body.email, request.body.password,)
-            reply(accessToken).code(201)
+            const accessToken = await login(request.payload.email, request.payload.password);
+            return reply.response(accessToken).code(201)
         } catch (err) {
-            reply({
+            return reply.response({
                 "Title": err.title,
                 "message": err.message
             }).code(400);
@@ -42,17 +42,16 @@ const userRoutes = [{
     handler: async (request, reply) => {
 
         const userInfo = {
-            email: request.body.email,
-            password: request.body.password,
+            ...request.payload,
             roundSalts: 10
         };
         const getHashUser = await hashUserPassowrd(userInfo.email, userInfo.password, userInfo.roundSalts);
 
         try {
             const newuser = await createUsers(getHashUser);
-            reply(newuser).code(201);
+            return reply.response(newuser).code(201);
         } catch (err) {
-            reply({
+            return reply.response({
                 "Title": err.title,
                 "message": err.message
             }).code(400);
@@ -60,15 +59,15 @@ const userRoutes = [{
     }
 },
 {
-    method: 'POST',
+    method: 'GET',
     path: '/users',
     handler: async (request, reply) => {
 
         try {
             const organizationQuery = await getUsers();
-            reply(organizationQuery).code(200);
+            return reply.response(organizationQuery).code(200);
         } catch (err) {
-            reply({
+            return reply.response({
                 "Title": err.title,
                 "message": err.message
             }).code(400);

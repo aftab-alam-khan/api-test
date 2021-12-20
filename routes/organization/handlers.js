@@ -21,19 +21,16 @@ const organizationRoutes = [{
         }
     },
     handler: async (request, reply) => {
+        
 
         const organization = {
-            name: request.body.name,
-            description: request.body.description,
-            url: request.body.url,
-            code: request.body.code,
-            type: request.body.type,
+            ...request.payload
         };
         try {
             const organizationCreated = await createOrganization(organization)
-            return reply(organizationCreated).code(201);
+            return reply.response(organizationCreated).code(201);
         } catch (err) {
-            return reply({
+            return reply.response({
                 "Title": err.title,
                 "message": err.message
             }).code(400);
@@ -52,9 +49,9 @@ const organizationRoutes = [{
         const id = request.params.id;
         try {
             const organizationId = await deleteOrganizationByID(id);
-            return reply({ message: organizationId }).code(200);
+            return reply.response({ message: organizationId }).code(200);
         } catch (err) {
-            return reply({
+            return reply.response({
                 "Title": err.title,
                 "message": err.message
             }).code(400);
@@ -76,10 +73,9 @@ const organizationRoutes = [{
 
         try {
             const data = await organizationInstance.fun(...organizationInstance.args)
-            console.log(data);
-            return reply(data).code(200);
+            return reply.response(data).code(200);
         } catch (err) {
-            return reply({
+            return reply.response({
                 "Title": err.title,
                 "message": err.message
             }).code(400);
@@ -97,10 +93,10 @@ const organizationRoutes = [{
 
         const id = request.params.id;
         try {
-            const organizationQuery = await getOrganizationByID(id, request.body)
-            return reply(organizationQuery).code(200);
+            const organizationQuery = await getOrganizationByID(id, request.payload)
+            return reply.response(organizationQuery).code(200);
         } catch (err) {
-            return reply({
+            return reply.response({
                 "Title": err.title,
                 "message": err.message
             }).code(400);
