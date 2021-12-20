@@ -1,93 +1,111 @@
 'use strict'
 
-const router = require('express').Router();
-const { organizationValidator,
-    idValidator,
-    queryValidator
-} = require('./schemas');
 const verifyToken = require('../utils/validateToken');
 const { getOrganizationInstanceByNameOrCode } = require('../utils/organization');
 
+const { organizationValidator,
+    idValidator,
+    queryValidator } = require('./schemas')
 const {
     createOrganization,
     deleteOrganizationByID,
     getOrganizationByID
 } = require('./services');
 
-// Create an organization information
-router.post('/organizations', verifyToken, async (req, res) => {
-    
-    const { error } = organizationValidator(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+const organizationRoutes = [{
+    method: 'POST',
+    path: '/organizations',
+    options: {
+        validate: {
+            payload: organizationValidator
+        }
+    },
+    handler: async (request, reply) => {
 
-    const organization = {
-        name: req.body.name,
-        description: req.body.description,
-        url: req.body.url,
-        code: req.body.code,
-        type: req.body.type,
-    };
-    try {
-        const organizationCreated = await createOrganization(organization)
-        res.status(201).send(organizationCreated);
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
+        const organization = {
+            name: request.body.name,
+            description: request.body.description,
+            url: request.body.url,
+            code: request.body.code,
+            type: request.body.type,
+        };
+        try {
+            const organizationCreated = await createOrganization(organization)
+            return reply(organizationCreated).code(201);
+        } catch (err) {
+            return reply({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
     }
-});
+}, {
+    method: 'DELETE',
+    path: '/organizations/{id}',
+    options: {
+        validate: {
+            params: idValidator
+        }
+    },
+    handler: async (request, reply) => {
 
-// Delete an organization information
-router.delete('/organizations/:id', verifyToken, async (req, res) => {
-    
-    const { error } = idValidator(req.params);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    const id = req.params.id;
-    try {
-        const organizationId = await deleteOrganizationByID(id);
-        res.status(200).json({ message: organizationId });
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
+        const id = request.params.id;
+        try {
+            const organizationId = await deleteOrganizationByID(id);
+            return reply({ message: organizationId }).code(200);
+        } catch (err) {
+            return reply({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
     }
-});
+}, {
+    method: 'GET',
+    path: '/organizations',
+    options: {
+        validate: {
+            query: queryValidator
+        }
+    },
+    handler: async (request, reply) => {
 
-router.get('/organizations', verifyToken, async (req, res) => {
+        const { name, code } = request.query;
+        const filter = { code: 0, url: 0 }
+        const organizationInstance = getOrganizationInstanceByNameOrCode(name, code, filter)
 
-    const { error } = queryValidator(req.query);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    const { name, code } = req.query;
-    const filter = { code: 0, url: 0 }
-    const organizationInstance = getOrganizationInstanceByNameOrCode(name, code, filter)
-
-    try {
-        const data = await organizationInstance.fun(...organizationInstance.args)
-        res.status(200).send(data);
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
+        try {
+            const data = await organizationInstance.fun(...organizationInstance.args)
+            console.log(data);
+            return reply(data).code(200);
+        } catch (err) {
+            return reply({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
     }
-});
+}, {
+    method: 'PATCH',
+    path: '/organizations/{id}',
+    options: {
+        validate: {
+            payload: organizationValidator
+        }
+    },
+    handler: async (request, reply) => {
 
-//Update an Organization information
-router.patch('/organizations/:id', verifyToken, async (req, res) => {
-    
-    const { error } = organizationValidator(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    const id = req.params.id;
-    try {
-        const organizationQuery = await getOrganizationByID(id, req.body)
-        res.status(200).send(organizationQuery);
-    } catch (err) {
-        res.status(400).json({
-            "Title": err.title,
-            "message": err.message});
+        const id = request.params.id;
+        try {
+            const organizationQuery = await getOrganizationByID(id, request.body)
+            return reply(organizationQuery).code(200);
+        } catch (err) {
+            return reply({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
     }
-});
+}];
 
-module.exports = router;
+module.exports = organizationRoutes;
