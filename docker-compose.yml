@@ -21,7 +21,6 @@ services:
       MONGODB_URL: mongodb://api_test_mongodb:27017/api-dev
       ACCESS_TOKEN_SECRET: thisISOrganizationAPI
       ACCESS_TOKEN_EXPIREIN: 1h
-      DB_NAME: my_db
     depends_on:
       - "api_test_mongodb"
 
