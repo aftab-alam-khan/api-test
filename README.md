@@ -15,3 +15,23 @@ Open [http://localhost:4000] to view it in the postman or any similar tool.
 
 The page will reload if you make edits.\
 You will also see any errors in the response.
+
+this is dockerised
+
+## check your docker up
+`docker -v`
+ if it will get result like, then your docker is installed and up
+ ```
+ Docker version 20.10.10, build b485636
+ ```
+
+## come to the home dir and 
+`cd api-test`
+
+then run this docker compose command
+```
+docker-compose up
+or
+docker compose up // if docker compose v2 is enabled
+```
+

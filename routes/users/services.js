@@ -42,8 +42,18 @@ const getUsers = async (filter) => {
   }
 };
 
+const deleteUserByID = async (_id) => {
+  try {
+    const deletedUser = await User.findByIdAndRemove({ _id });
+    return deletedUser;
+  } catch (error) {
+  throw new ErrorHandle('Delete a User Error', 'Failed to delete a User')
+}
+}
+
 module.exports = {
   login,
   createUsers,
-  getUsers
+  getUsers,
+  deleteUserByID
 }

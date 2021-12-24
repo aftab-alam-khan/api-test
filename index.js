@@ -5,6 +5,9 @@ const Mainfest = require('./config/mainfest')
 const OrganizationRoute = require('./routes/organization/handlers');
 const UserRoute = require('./routes/users/handlers');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 const db = require('./config/database');
 
 const startServer = async () => {
@@ -26,11 +29,19 @@ const startServer = async () => {
 
     await server.start();
     console.log(`Server up and running on ${server.info.address}:${server.info.port}`);
+
+    process.on('SIGINT', () => {
+        server.stop().then(() => {
+            console.log('\nHapi app server stopped by termination...');
+            process.exit(0);
+        });
+    });
 };
+
 
 
 startServer().catch((err) => {
 
-  console.error(err);
-  process.exit(1);
+    console.error(err);
+    process.exit(1);
 });

@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  # MongoDB service
+  api_test_mongodb:
+    container_name: api_test_mongodb_container
+    image: mongo:latest
+    restart: always
+    ports:
+      - 2717:27017
+    volumes:
+      - mongodb:/data/db
+  
+  api_test:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+    environment:
+      MONGODB_URL: mongodb://api_test_mongodb:27017/api-dev
+      ACCESS_TOKEN_SECRET: thisISOrganizationAPI
+      ACCESS_TOKEN_EXPIREIN: 1h
+      DB_NAME: my_db
+    depends_on:
+      - "api_test_mongodb"
+
+volumes:
+  mongodb: {}

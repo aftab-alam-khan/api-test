@@ -7,7 +7,8 @@ const verifyToken = require('../utils/validateToken');
 const {
     login,
     createUsers,
-    getUsers
+    getUsers,
+    deleteUserByID
 } = require('./services');
 
 const userRoutes = [{
@@ -66,6 +67,23 @@ const userRoutes = [{
         try {
             const organizationQuery = await getUsers();
             return reply.response(organizationQuery).code(200);
+        } catch (err) {
+            return reply.response({
+                "Title": err.title,
+                "message": err.message
+            }).code(400);
+        }
+    }
+},
+{
+    method: 'DELETE',
+    path: '/users/{id}',
+    handler: async (request, reply) => {
+
+        const id = request.params.id;
+        try {
+            const userId = await deleteUserByID(id);
+            return reply.response({ message: userId }).code(200);
         } catch (err) {
             return reply.response({
                 "Title": err.title,
