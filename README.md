@@ -35,3 +35,7 @@ or
 docker compose up // if docker compose v2 is enabled
 ```
 
+
+
+// check edge-api-base
+// check edge-api-hermes

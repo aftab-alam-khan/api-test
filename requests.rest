@@ -1,49 +1,49 @@
-GET http://localhost:4000/health_check
+GET http://localhost:3000/health_check
 
 ###
-POST  http://localhost:4000/api/organizations
+POST  http://localhost:3000/organizations
 Content-Type: application/json
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
 
 {
-"name": "Juanito",
-"description": "Best Juanito",
-"url": "www.google.com",
-"code": "1234",
-"type": "store2"
+"name": "Juanito 2",
+"description": "Best Juanito 2",
+"url": "www.Juanito1.com",
+"code": "12346",
+"type": "store3"
 }
 
 ###
-DELETE http://localhost:4000/api/organizations/618d1882f6ff9999ff6f7c12
+DELETE http://localhost:3000/organizations/61c62f0faa3b7f2c1b3d8e9f
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
 
 ###
-GET http://localhost:4000/api/organizations
+GET http://localhost:3000/organizations
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
 
 ###
-GET http://localhost:4000/api/organizations?name=Bookstoreupdate
+GET http://localhost:3000/organizations?name=Juanito
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
 
 ###
-GET http://localhost:4000/api/organizations?code=1234
+GET http://localhost:3000/organizations?code=1234
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
 
 ###
-PATCH http://localhost:4000/api/organizations/618d1898f6ff9999ff6f7c18
+PATCH http://localhost:3000/organizations/61c62f0faa3b7f2c1b3d8e9f
 Content-Type: application/json
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
 
 {
-    "name": "Bookstoreupdate",
-    "description": "Best Bookstore update",
-    "url": "www.bookupdate.com",
-    "code": "111update",
-    "type": "store1update"
+"name": "Juanito 1update",
+"description": "Best Juanito 1update",
+"url": "www.Juanito1update.com",
+"code": "12347",
+"type": "store1update"
 }
 
 ###
-POST  http://localhost:4000/api/user
+POST  http://localhost:3000/user
 Content-Type: application/json
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
 
@@ -53,7 +53,7 @@ Content-Type: application/json
 }
 
 ###
-POST  http://localhost:4000/api/user/login
+POST  http://localhost:3000/user/login
 Content-Type: application/json
 
 {
@@ -62,5 +62,18 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:4000/api/users
+GET http://localhost:3000/users
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTcxYTA2YThhNjBlY2FlMmEwNTRkYzgiLCJpYXQiOjE2MzY2MzY3NDksImV4cCI6MTYzNjY0MDM0OX0.hyJ3hl8C36sTriSVXifeB0p3V8jrUSbrPH54ijQfVV0
+
+###
+
+
+DELETE http://localhost:3000/users/61c62f2eaa3b7f2c1b3d8ea4
+
+
+###
+
+POST https://account-dev.regence.com/api/auth/regence
+Content-Type: : text/plain
+
+{"username":"BLUIDEGWP01","password":"\t pass#word$1","remember":false}

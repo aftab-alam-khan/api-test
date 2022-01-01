@@ -4,6 +4,7 @@ const Hapi = require('@hapi/hapi');
 const Mainfest = require('./config/mainfest')
 const OrganizationRoute = require('./routes/organization/handlers');
 const UserRoute = require('./routes/users/handlers');
+const validate = require('./routes/utils/validateToken')
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -15,6 +16,14 @@ const startServer = async () => {
     const mainfest = Mainfest();
 
     const server = Hapi.server(mainfest.option);
+
+    await server.register([{
+        Plugin: require('jsonwebtoken')
+    }]);
+
+    server.auth.strategy('jwtAccess', 'jwt', { key: process.env.ACCESS_TOKEN_SECRET,
+        validate
+    });
 
     server.route({
         method: 'GET',

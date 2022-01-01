@@ -73,6 +73,9 @@ const userRoutes = [{
                 "message": err.message
             }).code(400);
         }
+    },
+    options: {
+        auth: 'jwtAccess'
     }
 },
 {
