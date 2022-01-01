@@ -1,0 +1,9 @@
+./node_modules
+.dockerignore
+Dockerfile
+docker-compose.yml
+requests.rest
+README.md
+.env
+./config/dev.env
+./config/test.env
